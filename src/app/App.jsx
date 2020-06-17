@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Switch, Route, NavLink, Redirect } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 
-import { AppBar, Box, Button, Toolbar } from '@material-ui/core';
+import { AppBar, Box, Button, Toolbar, Card } from '@material-ui/core';
 
 import EmployeeCreator from '../pages/EmployeeCreator';
 import EmployeeList from '../pages/EmployeeList';
@@ -38,18 +38,18 @@ const App = () => {
   return (
     <>
       <AppBar position="sticky">
-          <Toolbar>
-            <Button color="inherit" component={NavLink} onClick={setEmpCreation} to="/employees/list">Список сотрудников</Button>
-            <Button color="inherit" component={NavLink} onClick={setOrgCreation} to="/organizations/list">Список организаций</Button>
-            <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/employees/tree">Дерево сотрудников</Button>
-            <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/organizations/tree">Дерево организаций</Button>
-            {
-              createBtnState !== CreateBtnStates.hide ? 
-              <Button classes={{ root: classes.createBtn}} color="inherit" component={NavLink} to={selectCreationLink()}>Создать</Button> : null  
-            }
-          </Toolbar>
-        </AppBar>
-        <Box margin="auto">
+        <Toolbar>
+          <Button color="inherit" component={NavLink} onClick={setEmpCreation} to="/employees/list">Список сотрудников</Button>
+          <Button color="inherit" component={NavLink} onClick={setOrgCreation} to="/organizations/list">Список организаций</Button>
+          <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/employees/tree">Дерево сотрудников</Button>
+          <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/organizations/tree">Дерево организаций</Button>
+          {
+            createBtnState !== CreateBtnStates.hide ? 
+            <Button classes={{ root: classes.createBtn}} color="inherit" component={NavLink} to={selectCreationLink()}>Создать</Button> : null  
+          }
+        </Toolbar>
+      </AppBar>
+        <Box component={Card} display="flex" flexDirection="column" margin="auto" minHeight="50%" minWidth="50%">
           <Switch>
             <Route path="/employees/add">
               <EmployeeCreator />

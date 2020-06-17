@@ -1,10 +1,10 @@
 const API = "http://localhost:8081/api";
 
-const getList = (entity, page, count, search) => {
+const getList = (entity, offset, limit, search) => {
     var url = new URL(`${API}/${entity}/list`);
-    url.search = new URLSearchParams({page: page, count: count, search: search}).toString();
+    url.search = new URLSearchParams({offset: offset, limit: limit, search: search}).toString();
     return fetch(url, { mode: 'cors' });
 };
 
-export const getEmployeeList = (page, count, search) => getList('employees', page, count, search);
-export const getOrganizationList = (page, count, search) => getList('organizations', page, count, search);
+export const getEmployeeList = (offset, limit, search) => getList('employees', offset, limit, search);
+export const getOrganizationList = (offset, limit, search) => getList('organizations', offset, limit, search);
