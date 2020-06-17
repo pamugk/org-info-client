@@ -32,13 +32,19 @@ class SearchableTable extends React.Component {
         this.handleResponse = this.handleResponse.bind(this);
     }
 
-    componentDidMount() {
-        if (typeof this.state.organizations == 'undefined')
-            this.props.elementProvider(this.state.page * this.props.fetchCount, this.props.fetchCount, this.state.search)
-            .then(this.handleResponse)
-            .catch(error => this.setState({elements: false}));
+    componentDidMount = () => this.sendRequest(); 
+
+    componentDidUpdate(prevProps) {
+        if (typeof this.state.elements == "undefined")
+            this.sendRequest();
     }
 
+    sendRequest() {
+        this.props.elementProvider(this.state.page * this.props.fetchCount, this.props.fetchCount, this.state.search)
+                .then(this.handleResponse)
+                .catch(error => this.setState({elements: false}));
+    } 
+    
     handleResponse(response) {
         switch(response.status) {
             case 200: 
@@ -66,7 +72,7 @@ class SearchableTable extends React.Component {
             typeof this.state.elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
             this.state.elements === false ? <Box component={Paper} margin="auto" padding="1rem"><p>При загрузке элементов что-то пошло не так</p></Box> :
             this.state.elements.dataChunk.length === 0 ? <Box component={Paper} margin="auto" padding="1rem"><p>Ничего не найдено</p></Box> :
-            <TableContainer component={Paper}>
+            <TableContainer component={Box} display="flex" flexDirection="column" flexGrow="1">
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -75,7 +81,7 @@ class SearchableTable extends React.Component {
                     </TableHead>
                     <TableBody>
                         {
-                            this.props.elements.dataChunk.map(element =>
+                            this.state.elements.dataChunk.map(element =>
                                 <TableRow key={this.props.keyProvider(element)}>
                                     { this.props.disassemble(element).map(prop => <TableCell align="center">{prop}</TableCell>) }
                                 </TableRow>
@@ -84,7 +90,9 @@ class SearchableTable extends React.Component {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    component={Box}
                     count={this.state.elements.totalCount}
+                    marginTop="auto"
                     onChangePage={this.pageChanged}
                     page={this.state.page} 
                     rowsPerPage={this.props.fetchCount}

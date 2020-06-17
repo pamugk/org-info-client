@@ -4,7 +4,7 @@ import SearchableTable from '../components/SearchableTable';
 
 const OrganizationList = () => {
     const disassembleOrganization = organization => [organization.id, organization.name, organization.parentName];
-    const organizationKey = organization => organization.id;
+    const organizationKey = (organization) => organization.id;
 
     return <SearchableTable
         disassemble = {disassembleOrganization}
