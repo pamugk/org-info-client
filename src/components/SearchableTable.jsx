@@ -63,7 +63,7 @@ class SearchableTable extends React.Component {
     <>
         <SearchBar onChange={this.changeHandler} onKeyPress={this.keyHandler} value={this.state.search} />
         {
-            typeof elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
+            typeof this.state.elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
             this.state.elements === false ? <Box component={Paper} margin="auto" padding="1rem"><p>При загрузке элементов что-то пошло не так</p></Box> :
             this.state.elements.dataChunk.length === 0 ? <Box component={Paper} margin="auto" padding="1rem"><p>Ничего не найдено</p></Box> :
             <TableContainer component={Paper}>
