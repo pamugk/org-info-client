@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Switch, Route, NavLink, Redirect } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 
 import { AppBar, Box, Button, Toolbar, Card } from '@material-ui/core';
 
-import EmployeeCreator from '../pages/EmployeeCreator';
+import EmployeeEditor from '../pages/EmployeeEditor';
 import EmployeeList from '../pages/EmployeeList';
 import EmployeeTree from '../pages/EmployeeTree';
-import OrganizationCreator from '../pages/OrganizationCreator';
+import OrganizationEditor from '../pages/OrganizationEditor';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationTree from '../pages/OrganizationTree';
 
@@ -18,61 +18,56 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const App = () => {
-  const CreateBtnStates = Object.freeze({ "createEmployee" : 0, "createOrg" : 1, "hide" : 2 });
-
   const classes = useStyles();
-  const [createBtnState, setCreationBtnState] = useState(CreateBtnStates.createEmployee);
-
-  const hideCreationBtn = () => setCreationBtnState(CreateBtnStates.hide);
-  const setEmpCreation = () => setCreationBtnState(CreateBtnStates.createEmployee);
-  const setOrgCreation = () => setCreationBtnState(CreateBtnStates.createOrg);
-
-  const selectCreationLink = () => {
-    switch(createBtnState) {
-      case CreateBtnStates.createEmployee: return "/employees/add";
-      case CreateBtnStates.createOrg: return "/organizations/add";
-      default: return "#";
-    };
-  }
 
   return (
     <>
       <AppBar position="sticky">
         <Toolbar>
-          <Button color="inherit" component={NavLink} onClick={setEmpCreation} to="/employees/list">Список сотрудников</Button>
-          <Button color="inherit" component={NavLink} onClick={setOrgCreation} to="/organizations/list">Список организаций</Button>
-          <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/employees/tree">Дерево сотрудников</Button>
-          <Button color="inherit" component={NavLink} onClick={hideCreationBtn} to="/organizations/tree">Дерево организаций</Button>
-          {
-            createBtnState !== CreateBtnStates.hide ? 
-            <Button classes={{ root: classes.createBtn}} color="inherit" component={NavLink} to={selectCreationLink()}>Создать</Button> : null  
-          }
-        </Toolbar>
-      </AppBar>
-        <Box component={Card} display="flex" flexDirection="column" margin="auto" minHeight="50%" minWidth="50%">
+          <Button color="inherit" component={NavLink} to="/employees/list">Список сотрудников</Button>
+          <Button color="inherit" component={NavLink} to="/organizations/list">Список организаций</Button>
+          <Button color="inherit" component={NavLink} to="/employees/tree">Дерево сотрудников</Button>
+          <Button color="inherit" component={NavLink} to="/organizations/tree">Дерево организаций</Button>
           <Switch>
-            <Route path="/employees/add">
-              <EmployeeCreator />
-            </Route>
             <Route path="/employees/list">
-              <EmployeeList />
-            </Route>
-            <Route path="/employees/tree">
-              <EmployeeTree />
-            </Route>
-            <Route path="/organizations/add">
-              <OrganizationCreator />
+              <Button classes={{ root: classes.createBtn}} color="inherit" component={NavLink} to="/employees/add">Создать</Button>
             </Route>
             <Route path="/organizations/list">
-              <OrganizationList />
-            </Route>
-            <Route path="/organizations/tree">
-              <OrganizationTree />
-            </Route>
-            <Redirect from="/" to="/employees/list"/>
+              <Button classes={{ root: classes.createBtn}} color="inherit" component={NavLink} to="/organizations/add">Создать</Button>
+            </Route> from="/" 
           </Switch>
-        </Box>
-      </>
+        </Toolbar>
+      </AppBar>
+      <Box component={Card} display="flex" flexDirection="column" margin="auto" minHeight="50%" minWidth="50%">
+        <Switch>
+          <Route path="/employees/:id">
+            <EmployeeEditor />
+          </Route>
+          <Route path="/employees/add">
+            <EmployeeEditor />
+          </Route>
+          <Route path="/employees/list">
+            <EmployeeList />
+          </Route>
+          <Route path="/employees/tree">
+            <EmployeeTree />
+          </Route>
+          <Route path="/organizations/:id">
+            <OrganizationEditor />
+          </Route>
+          <Route path="/organizations/add">
+            <OrganizationEditor />
+          </Route>
+          <Route path="/organizations/list">
+            <OrganizationList />
+          </Route>
+          <Route path="/organizations/tree">
+            <OrganizationTree />
+          </Route>
+          <Redirect to="/employees/list"/>
+        </Switch>
+      </Box>
+    </>
   );
 }
 
