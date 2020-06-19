@@ -1,5 +1,5 @@
 import React from 'react';
-import Redirect from "react-router-dom/Redirect";
+import { Redirect, withRouter } from "react-router-dom";
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -10,17 +10,18 @@ import SearchableTable from '../components/SearchableTable';
 import TextField from '@material-ui/core/TextField';
 
 import { createOrganization, getOrganizationList, fetchOrganizationInfo, updateOrganization } from '../api/api';
+import { DialogTitle } from '@material-ui/core';
 
 class OrganizationEditor extends React.Component {
     constructor(props) {
         super(props);
-        this.updating = typeof props.match.params.id != 'undefined';
+        this.updating = typeof props.match != 'undefined' && typeof props.match.params.id != 'undefined';
         this.state = {
             openOrgDialog: false,
-            organization: { id: props.match.params.id, name: "", parent: null },
-            toMainPage: false,
+            organization: { id: this.updating ? props.match.params.id: null, name: "", parent: null },
+            redirect: false,
             waitingResponse: this.updating,
-            wrongInput: true
+            wrongInput: false
         }
         this.handleResponseOnInfoRequest = this.handleResponseOnInfoRequest.bind(this);
         this.handleResponseOnSubmitRequest = this.handleResponseOnSubmitRequest.bind(this);
@@ -39,7 +40,7 @@ class OrganizationEditor extends React.Component {
         this.setState({organization: { ...this.state.organization, name: event.target.value}, wrongInput: !event.target.value});
 
     handleResponseOnInfoRequest(response) {
-        switch(response.code) {
+        switch(response.status) {
             case 200: {
                 response.json().then(json => {
                     this.selectedParent = json.data.parent;
@@ -94,8 +95,8 @@ class OrganizationEditor extends React.Component {
     static disassembleOrganization = organization => [organization.id, organization.name, organization.parentName];
     static organizationKey = (organization) => organization.id;
 
-    render = () => this.state.toMainPage ?
-        <Redirect to="/" /> : (
+    render = () => this.state.redirect ?
+        <Redirect to="/organizations/list" /> : (
             <Box margin="auto">
                 {
                     this.state.criticalError ? <p>{this.state.criticalError}</p> :
@@ -105,7 +106,7 @@ class OrganizationEditor extends React.Component {
                             { typeof this.state.error == "undefined" ? null : <p>{this.state.error}</p>}
                             <TextField
                                 error={this.state.wrongInput}
-                                helperText={!this.state.error ? null : "Название не может быть пустым"}
+                                helperText={this.state.wrongInput ? "Название не может быть пустым" : null }
                                 label="Название организации"
                                 onChange={this.nameChangeHandler}
                                 value={this.state.organization.name}
@@ -116,7 +117,7 @@ class OrganizationEditor extends React.Component {
                                 {
                                     this.state.organization.parent ?
                                     `В качестве головной выбрана организация с идентификатором ${this.state.organization.parent}` :
-                                    "Головной организации нет"
+                                    "Головная организация не выбрана"
                                 }
                             </Button>
                             <Button
@@ -127,12 +128,14 @@ class OrganizationEditor extends React.Component {
                             </Button>
                         </FormControl>
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
+                            <DialogTitle>Выберите головную организацию</DialogTitle>
                             <SearchableTable
                                 disassemble={OrganizationEditor.disassembleOrganization}
                                 elementProvider={getOrganizationList}
                                 exclude={this.state.organization.id}
                                 fetchCount={5}
                                 header={OrganizationEditor.header}
+                                keyProvider={OrganizationEditor.organizationKey}
                                 selection={false}
                                 onSelectionChanged={this.selectedParentChanged}
                             />
@@ -143,4 +146,4 @@ class OrganizationEditor extends React.Component {
         );
 };
 
-export default OrganizationEditor;
+export default withRouter(OrganizationEditor);

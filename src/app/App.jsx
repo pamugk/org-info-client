@@ -40,9 +40,6 @@ const App = () => {
       </AppBar>
       <Box component={Card} display="flex" flexDirection="column" margin="auto" minHeight="50%" minWidth="50%">
         <Switch>
-          <Route path="/employees/:id">
-            <EmployeeEditor />
-          </Route>
           <Route path="/employees/add">
             <EmployeeEditor />
           </Route>
@@ -52,8 +49,8 @@ const App = () => {
           <Route path="/employees/tree">
             <EmployeeTree />
           </Route>
-          <Route path="/organizations/:id">
-            <OrganizationEditor />
+          <Route path="/employees/:id">
+            <EmployeeEditor />
           </Route>
           <Route path="/organizations/add">
             <OrganizationEditor />
@@ -63,6 +60,9 @@ const App = () => {
           </Route>
           <Route path="/organizations/tree">
             <OrganizationTree />
+          </Route>
+          <Route path="/organizations/:id">
+            <OrganizationEditor />
           </Route>
           <Redirect to="/employees/list"/>
         </Switch>
