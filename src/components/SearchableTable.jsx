@@ -97,13 +97,13 @@ class SearchableTable extends React.Component {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center">
+                            <TableCell align="center" key="tools">
                                 { 
                                     this.props.selection ? 
                                     <Radio
                                         checked={!this.state.selected}
                                         onChange={this.selectionChanged}
-                                        value={null}
+                                        value=""
                                     />:
                                     null
                                 }
@@ -115,11 +115,11 @@ class SearchableTable extends React.Component {
                         {
                             this.state.elements.dataChunk.map(element =>
                                 <TableRow key={this.props.keyProvider(element)}>
-                                    <TableCell align="center">
+                                    <TableCell align="center" key="tools">
                                         { 
                                             this.props.selection ? 
                                             <Radio
-                                                checked={this.state.selection === this.props.keyProvider(element)}
+                                                checked={this.state.selected === this.props.keyProvider(element)}
                                                 onChange={this.selectionChanged}
                                                 value={this.props.keyProvider(element)}
                                             />:
@@ -128,7 +128,7 @@ class SearchableTable extends React.Component {
                                             </IconButton>
                                         }
                                     </TableCell>
-                                    { this.props.disassemble(element).map(prop => <TableCell align="center">{prop}</TableCell>) }
+                                    { this.props.disassemble(element).map(prop => <TableCell align="center" key={prop}>{prop}</TableCell>) }
                                 </TableRow>
                             )
                         }

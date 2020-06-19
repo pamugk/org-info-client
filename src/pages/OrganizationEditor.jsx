@@ -15,10 +15,11 @@ import { DialogTitle } from '@material-ui/core';
 class OrganizationEditor extends React.Component {
     constructor(props) {
         super(props);
-        this.updating = typeof props.match != 'undefined' && typeof props.match.params.id != 'undefined';
+        this.updating = typeof props.match.params.id != 'undefined';
         this.state = {
             openOrgDialog: false,
             organization: { id: this.updating ? props.match.params.id: null, name: "", parent: null },
+            parent: null,
             redirect: false,
             waitingResponse: this.updating,
             wrongInput: false
@@ -27,13 +28,39 @@ class OrganizationEditor extends React.Component {
         this.handleResponseOnSubmitRequest = this.handleResponseOnSubmitRequest.bind(this);
         this.selectedParentChanged = this.selectedParentChanged.bind(this);
         this.onOrgDialogClose = this.onOrgDialogClose.bind(this);
+        this.handleResponseOnParentInfo = this.handleResponseOnParentInfo.bind(this);
     }
 
     componentDidMount() {
         if (this.updating)
             fetchOrganizationInfo(this.state.organization.id)
             .then(this.handleResponseOnInfoRequest)
-            .catch(error => this.setState({criticalError: 'Нет соединения с сервером, попробуйте позднее', waitingResponse:false}));
+            .catch(error => this.setState({criticalError: "Нет соединения с сервером, попробуйте позднее", waitingResponse:false}));
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.organization.parent !== this.state.organization.parent
+            && this.state.organization.parent)
+            this.requestParentInfo();
+    }
+
+    requestParentInfo = () => 
+        fetchOrganizationInfo(this.state.organization.parent)
+            .then(this.handleResponseOnParentInfo)
+            .catch(error => this.setState({error: "Соединение с сервером потеряно на неопределённое время"}));
+
+    handleResponseOnParentInfo(response) {
+        switch(response.status) {
+            case 200: {
+                response.json().then(json => this.setState({parent: json.data.name}));
+                break;
+            }
+            case 404: {
+                this.setState({parent: undefined});
+                break;
+            }
+            default: this.requestParentInfo();
+        }
     }
 
     nameChangeHandler = (event) =>
@@ -43,7 +70,7 @@ class OrganizationEditor extends React.Component {
         switch(response.status) {
             case 200: {
                 response.json().then(json => {
-                    this.selectedParent = json.data.parent;
+                    this.tempParent = json.data.parent;
                     this.setState({organization: json.data, waitingResponse:false});
                 });
                 break;
@@ -58,13 +85,16 @@ class OrganizationEditor extends React.Component {
     };
 
     handleResponseOnSubmitRequest(response) {
-        switch(response.code) {
+        switch(response.status) {
             case 200:
             case 201: {
-                this.setState({toMainPage: true});
+                this.setState({redirect: true});
                 break;
             }
-            case 404:
+            case 404: {
+                this.setState({criticalError: "Редактируемая организация уже удалена кем-то ещё, советуем вам заняться чем-нибудь другим"})
+                break;
+            }
             case 406: {
                 response.json().then(json => this.setState({error: json.data, waitingResponse:false}));
                 break;
@@ -79,7 +109,7 @@ class OrganizationEditor extends React.Component {
     selectedParentChanged = (selection) => this.tempParent = selection;
 
     onOrgDialogClose() {
-        this.setState({organization: {...this.state.organization, parent: this.tempParent}, openOrgDialog:false});
+        this.setState({organization: {...this.state.organization, parent: this.tempParent !== '' ? this.tempParent : null}, openOrgDialog:false});
     }
 
     parentBtnClicked = () => this.setState({openOrgDialog: true})
@@ -115,9 +145,13 @@ class OrganizationEditor extends React.Component {
                                 onClick={this.parentBtnClicked}
                             >
                                 {
-                                    this.state.organization.parent ?
-                                    `В качестве головной выбрана организация с идентификатором ${this.state.organization.parent}` :
-                                    "Головная организация не выбрана"
+                                    !this.state.organization.parent ? "Головная организация не выбрана" :
+                                    typeof this.state.parent === "undefined" ?
+                                    "Выбранная вами в качестве головной организация была кем-то удалена. Советуем поменять ваш выбор" :
+                                    <>
+                                        {`Идентификатор головной организации: ${this.state.organization.parent}.`}<br/>
+                                        {`Название ${this.state.parent ? `'${this.state.parent}'` : "пока загружается"}`}
+                                    </>
                                 }
                             </Button>
                             <Button
@@ -136,7 +170,8 @@ class OrganizationEditor extends React.Component {
                                 fetchCount={5}
                                 header={OrganizationEditor.header}
                                 keyProvider={OrganizationEditor.organizationKey}
-                                selection={false}
+                                selected={this.state.organization.parent}
+                                selection={true}
                                 onSelectionChanged={this.selectedParentChanged}
                             />
                         </Dialog>
