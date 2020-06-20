@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
 import SearchableTable from '../components/SearchableTable';
 import TextField from '@material-ui/core/TextField';
@@ -250,32 +251,36 @@ class EmployeeEditor extends React.Component {
                         </FormControl>
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
                             <DialogTitle>Выберите организацию</DialogTitle>
-                            <SearchableTable
-                                deletion={false}
-                                disassemble={EmployeeEditor.disassembleOrganization}
-                                elementProvider={getOrganizationList}
-                                fetchCount={5}
-                                header={EmployeeEditor.orgHeader}
-                                keyProvider={EmployeeEditor.organizationKey}
-                                selected={this.state.employee.organization}
-                                selection={true}
-                                onSelectionChanged={this.selectedOrganizationChanged}
-                            />
+                            <DialogContent>
+                                <SearchableTable
+                                    deletion={false}
+                                    disassemble={EmployeeEditor.disassembleOrganization}
+                                    elementProvider={getOrganizationList}
+                                    fetchCount={5}
+                                    header={EmployeeEditor.orgHeader}
+                                    keyProvider={EmployeeEditor.organizationKey}
+                                    selected={this.state.employee.organization}
+                                    selection={true}
+                                    onSelectionChanged={this.selectedOrganizationChanged}
+                                />
+                            </DialogContent>
                         </Dialog>
                         <Dialog onClose={this.onChiefDialogClose} open={this.state.openChiefDialog}>
                             <DialogTitle>Выберите руководителя</DialogTitle>
-                            <SearchableTable
-                                deletion={false}
-                                disassemble={EmployeeEditor.disassembleEmployee}
-                                elementProvider={getEmployeeList}
-                                exclude={[this.state.employee.id, this.state.employee.organization]}
-                                fetchCount={5}
-                                header={EmployeeEditor.empHeader}
-                                keyProvider={EmployeeEditor.employeeKey}
-                                selected={this.state.employee.chief}
-                                selection={true}
-                                onSelectionChanged={this.selectedChiefChanged}
-                            />
+                            <DialogContent>
+                                <SearchableTable
+                                    deletion={false}
+                                    disassemble={EmployeeEditor.disassembleEmployee}
+                                    elementProvider={getEmployeeList}
+                                    exclude={[this.state.employee.id, this.state.employee.organization]}
+                                    fetchCount={5}
+                                    header={EmployeeEditor.empHeader}
+                                    keyProvider={EmployeeEditor.employeeKey}
+                                    selected={this.state.employee.chief}
+                                    selection={true}
+                                    onSelectionChanged={this.selectedChiefChanged}
+                                />
+                            </DialogContent>
                         </Dialog>
                     </>
                 }

@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
 import SearchableTable from '../components/SearchableTable';
 import TextField from '@material-ui/core/TextField';
@@ -171,17 +172,19 @@ class OrganizationEditor extends React.Component {
                         </FormControl>
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
                             <DialogTitle>Выберите головную организацию</DialogTitle>
-                            <SearchableTable
-                                disassemble={OrganizationEditor.disassembleOrganization}
-                                elementProvider={getOrganizationList}
-                                exclude={this.state.organization.id}
-                                fetchCount={5}
-                                header={OrganizationEditor.header}
-                                keyProvider={OrganizationEditor.organizationKey}
-                                selected={this.state.organization.parent}
-                                selection={true}
-                                onSelectionChanged={this.selectedParentChanged}
-                            />
+                            <DialogContent>
+                                <SearchableTable
+                                    disassemble={OrganizationEditor.disassembleOrganization}
+                                    elementProvider={getOrganizationList}
+                                    exclude={this.state.organization.id}
+                                    fetchCount={5}
+                                    header={OrganizationEditor.header}
+                                    keyProvider={OrganizationEditor.organizationKey}
+                                    selected={this.state.organization.parent}
+                                    selection={true}
+                                    onSelectionChanged={this.selectedParentChanged}
+                                />
+                            </DialogContent>
                         </Dialog>
                     </>
                 }

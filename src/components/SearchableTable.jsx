@@ -5,6 +5,9 @@ import PropTypes from 'prop-types';
 import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -91,6 +94,7 @@ class SearchableTable extends React.Component {
     }
 
     deleteItem(id) {
+        this.setState({deleting: true});
         this.props.removator(id)
             .then(this.handleDeletionResponse)
             .catch(error => this.setState({}));
@@ -99,15 +103,19 @@ class SearchableTable extends React.Component {
     handleDeletionResponse(response) {
         switch (response.status) {
             case 200: {
+                this.setState({deleting: {success: true, message: "Элемент успешно удалён", reload: true}});
                 break;
             }
             case 404: {
+                response.json().then(json => this.setState({deleting: {success: false, message: json.data, reload: true}}));
                 break;
             }
             case 422: {
+                response.json().then(json => this.setState({deleting: {success: false, message: json.data}}));
                 break;
             }
             default: {
+                this.setState({deleting: {success: false, message: "При удалении элемента что-то внезапно пошло не так"}});
                 break;
             }
         }
@@ -127,6 +135,21 @@ class SearchableTable extends React.Component {
                 Ничего не найдено
             </Alert> :
             <TableContainer component={Box} display="flex" flexDirection="column" flexGrow="1">
+                {
+                    typeof this.state.deleting == "undefined" ? null:
+                    this.state.deleting === true ? <Box margin="auto"><CircularProgress /></Box> :
+                    <Dialog
+                        onClose={() => this.setState({deleting: undefined, elements: this.state.deleting.reload ? undefined : this.state.elements})}
+                        open={true}
+                        //severity={this.state.deleting.success ? "success" : "warning"}
+                    >
+                        <DialogContent>
+                            <DialogContentText>
+                                {this.state.deleting.message}
+                            </DialogContentText>
+                        </DialogContent>
+                    </Dialog>
+                }
                 <Table>
                     <TableHead>
                         <TableRow>
