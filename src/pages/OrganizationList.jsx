@@ -1,5 +1,5 @@
 import React from 'react';
-import { getOrganizationList } from '../api/api';
+import { deleteOrganization, getOrganizationList } from '../api/api';
 import SearchableTable from '../components/SearchableTable';
 
 const OrganizationList = () => {
@@ -18,9 +18,10 @@ const OrganizationList = () => {
         disassemble = {disassembleOrganization}
         editRedirection={organizationEditRedirection}
         elementProvider = {getOrganizationList}
-        fetchCount = {1}
+        fetchCount = {10}
         header = {header}
         keyProvider = {organizationKey}
+        removator = {deleteOrganization}
         selection = {false}
     />;
 };

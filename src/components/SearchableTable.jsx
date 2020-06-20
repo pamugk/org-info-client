@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -29,6 +29,7 @@ class SearchableTable extends React.Component {
         fetchCount: PropTypes.number.isRequired,
         header: PropTypes.array.isRequired,
         keyProvider: PropTypes.func.isRequired,
+        removator: PropTypes.func,
         selection: PropTypes.bool.isRequired,
         selected: PropTypes.string,
         onSelectionChanged: PropTypes.func
@@ -43,6 +44,7 @@ class SearchableTable extends React.Component {
         };
         this.keyHandler = this.keyHandler.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
+        this.handleDeletionResponse = this.handleDeletionResponse.bind(this);
     }
 
     componentDidMount = () => this.sendRequest(); 
@@ -88,13 +90,42 @@ class SearchableTable extends React.Component {
         this.setState({selected: newSelection});
     }
 
+    deleteItem(id) {
+        this.props.removator(id)
+            .then(this.handleDeletionResponse)
+            .catch(error => this.setState({}));
+    }
+
+    handleDeletionResponse(response) {
+        switch (response.status) {
+            case 200: {
+                break;
+            }
+            case 404: {
+                break;
+            }
+            case 422: {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
     render = () =>
     <>
         <SearchBar onChange={this.changeHandler} onKeyPress={this.keyHandler} value={this.state.search} />
         {
             typeof this.state.elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
-            this.state.elements === false ? <Box component={Paper} margin="auto" padding="1rem"><p>При загрузке элементов что-то пошло не так</p></Box> :
-            this.state.elements.dataChunk.length === 0 ? <Box component={Paper} margin="auto" padding="1rem"><p>Ничего не найдено</p></Box> :
+            this.state.elements === false ? 
+            <Alert component={Box} margin="auto" padding="1rem" severity="error">
+                При загрузке элементов что-то пошло не так
+            </Alert> :
+            this.state.elements.dataChunk.length === 0 ? 
+            <Alert component={Box} margin="auto" padding="1rem" severity="info">
+                Ничего не найдено
+            </Alert> :
             <TableContainer component={Box} display="flex" flexDirection="column" flexGrow="1">
                 <Table>
                     <TableHead>
@@ -111,6 +142,7 @@ class SearchableTable extends React.Component {
                                 }
                             </TableCell>
                             { this.props.header.map(column => <TableCell align="center" key={column.id}>{column.label}</TableCell>) }
+                            { this.props.deletion ? <TableCell align="center" key="deletion" /> : null }
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -131,6 +163,15 @@ class SearchableTable extends React.Component {
                                         }
                                     </TableCell>
                                     { this.props.disassemble(element).map(prop => <TableCell align="center" key={prop.id}>{prop.value}</TableCell>) }
+                                    { 
+                                        this.props.deletion ? 
+                                        <TableCell align="center" key="deletion">
+                                            <IconButton onClick={() => this.deleteItem(this.props.keyProvider(element))}>
+                                                <DeleteForeverIcon />
+                                            </IconButton>
+                                        </TableCell> : 
+                                        null 
+                                    }
                                 </TableRow>
                             )
                         }

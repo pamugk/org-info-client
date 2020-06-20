@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEmployeeList } from '../api/api'
+import { deleteEmployee, getEmployeeList } from '../api/api'
 import SearchableTable from '../components/SearchableTable';
 
 const EmployeeList = () => {
@@ -21,6 +21,7 @@ const EmployeeList = () => {
         fetchCount = {10}
         header = {header}
         keyProvider = {employeeKey}
+        removator = {deleteEmployee}
         selection = {false}
     />;
 };

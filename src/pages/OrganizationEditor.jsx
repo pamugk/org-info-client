@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, withRouter } from "react-router-dom";
 
+import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -133,11 +134,14 @@ class OrganizationEditor extends React.Component {
         <Redirect to="/organizations/list" /> : (
             <Box margin="auto">
                 {
-                    this.state.criticalError ? <p>{this.state.criticalError}</p> :
+                    this.state.criticalError ? <Alert severity="error">{this.state.criticalError}</Alert> :
                     this.waitingResponse ? <CircularProgress /> :
                     <>
                         <FormControl>
-                            { typeof this.state.error == "undefined" ? null : <p>{this.state.error}</p>}
+                            { 
+                                typeof this.state.error == "undefined" ? null :
+                                <Alert severity="warning">{this.state.error}</Alert>
+                            }
                             <TextField
                                 error={this.state.wrongInput}
                                 helperText={this.state.wrongInput ? "Название не может быть пустым" : null }
