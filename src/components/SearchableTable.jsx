@@ -61,7 +61,7 @@ class SearchableTable extends React.Component {
         this.props.elementProvider(
             {
                 offset: this.state.page * this.props.fetchCount, limit: this.props.fetchCount,
-                search: this.state.search, exclude: this.props.exclude
+                search: this.state.search ? this.state.search : undefined, exclude: this.props.exclude
             })
                 .then(this.handleResponse)
                 .catch(error => this.setState({elements: false}));
@@ -127,11 +127,11 @@ class SearchableTable extends React.Component {
         {
             typeof this.state.elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
             this.state.elements === false ? 
-            <Alert component={Box} margin="auto" padding="1rem" severity="error">
+            <Alert component={Box} margin="auto" severity="error">
                 При загрузке элементов что-то пошло не так
             </Alert> :
             this.state.elements.dataChunk.length === 0 ? 
-            <Alert component={Box} margin="auto" padding="1rem" severity="info">
+            <Alert component={Box} margin="auto" severity="info">
                 Ничего не найдено
             </Alert> :
             <TableContainer component={Box} display="flex" flexDirection="column" flexGrow="1">

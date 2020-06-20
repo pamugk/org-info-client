@@ -1,5 +1,15 @@
 import React from 'react';
 
-const OrganizationTree = () => <p>Дерево организаций</p>;
+import TreeView from '../components/TreeView';
+
+import {getOrganizationTree} from '../api/api';
+
+const OrganizationTree = () =>
+    <TreeView
+        elementProvider={getOrganizationTree}
+        elementStringifier={(organization) => organization.name}
+        keyProvider={(organization) => organization.id} 
+        root="Организации"
+    />;
 
 export default OrganizationTree;
