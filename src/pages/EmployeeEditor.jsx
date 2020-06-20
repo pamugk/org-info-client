@@ -190,7 +190,9 @@ class EmployeeEditor extends React.Component {
     static organizationKey = (organization) => organization.id;
     
     static empHeader = [{id:"id", label:"ID"}, {id:"name", label:"Имя сотрудника"}, {id:"chief", label:"Руководитель"}];
-    static disassembleEmployee = employee => [employee.id, employee.name, employee.chiefName];
+    static disassembleEmployee = employee =>  [
+        {id: "id", value:employee.id}, {id: "name", value: employee.name}, {id:"chief", value:employee.chief}
+    ];
     static employeeKey = (employee) => employee.id;
 
     render = () => this.state.redirect ?
@@ -245,6 +247,7 @@ class EmployeeEditor extends React.Component {
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
                             <DialogTitle>Выберите организацию</DialogTitle>
                             <SearchableTable
+                                deletion={false}
                                 disassemble={EmployeeEditor.disassembleOrganization}
                                 elementProvider={getOrganizationList}
                                 fetchCount={5}
@@ -258,6 +261,7 @@ class EmployeeEditor extends React.Component {
                         <Dialog onClose={this.onChiefDialogClose} open={this.state.openChiefDialog}>
                             <DialogTitle>Выберите руководителя</DialogTitle>
                             <SearchableTable
+                                deletion={false}
                                 disassemble={EmployeeEditor.disassembleEmployee}
                                 elementProvider={getEmployeeList}
                                 exclude={[this.state.employee.id, this.state.employee.organization]}

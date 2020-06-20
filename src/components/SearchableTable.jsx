@@ -16,10 +16,12 @@ import TableRow from '@material-ui/core/TableRow';
 import SearchBar from './SearchBar';
 import { Radio } from '@material-ui/core';
 
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 
 class SearchableTable extends React.Component {
     static propTypes = {
+        deletion: PropTypes.bool.isRequired,
         disassemble: PropTypes.func.isRequired,
         editRedirection: PropTypes.func,
         elementProvider: PropTypes.func.isRequired,
@@ -128,7 +130,7 @@ class SearchableTable extends React.Component {
                                             </IconButton>
                                         }
                                     </TableCell>
-                                    { this.props.disassemble(element).map(prop => <TableCell align="center" key={prop}>{prop}</TableCell>) }
+                                    { this.props.disassemble(element).map(prop => <TableCell align="center" key={prop.id}>{prop.value}</TableCell>) }
                                 </TableRow>
                             )
                         }

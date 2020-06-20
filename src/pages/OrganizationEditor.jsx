@@ -123,7 +123,10 @@ class OrganizationEditor extends React.Component {
     static header = [
         {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
         {id:"parent", label:"Головная организация"}];
-    static disassembleOrganization = organization => [organization.id, organization.name, organization.parentName];
+    static disassembleOrganization = organization =>  [
+        {id:"id",value:organization.id}, {id:"name", value:organization.name}, 
+        {id:"parentName", value: organization.parentName}
+    ];
     static organizationKey = (organization) => organization.id;
 
     render = () => this.state.redirect ?
