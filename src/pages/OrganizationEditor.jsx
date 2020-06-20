@@ -17,6 +17,7 @@ class OrganizationEditor extends React.Component {
         super(props);
         this.updating = typeof props.match.params.id != 'undefined';
         this.state = {
+            madeChanges: false,
             openOrgDialog: false,
             organization: { id: this.updating ? props.match.params.id: null, name: "", parent: null },
             parent: null,
@@ -52,7 +53,7 @@ class OrganizationEditor extends React.Component {
     handleResponseOnParentInfo(response) {
         switch(response.status) {
             case 200: {
-                response.json().then(json => this.setState({parent: json.data.name}));
+                response.json().then(json => this.setState({parent: json.data.name, wrongInput:false}));
                 break;
             }
             case 404: {
@@ -64,7 +65,7 @@ class OrganizationEditor extends React.Component {
     }
 
     nameChangeHandler = (event) =>
-        this.setState({organization: { ...this.state.organization, name: event.target.value}, wrongInput: !event.target.value});
+        this.setState({organization: { ...this.state.organization, name: event.target.value}, madeChanges:true, wrongInput: !event.target.value});
 
     handleResponseOnInfoRequest(response) {
         switch(response.status) {
@@ -96,7 +97,7 @@ class OrganizationEditor extends React.Component {
                 break;
             }
             case 406: {
-                response.json().then(json => this.setState({error: json.data, waitingResponse:false}));
+                response.json().then(json => this.setState({error: json.data, waitingResponse:false, wrongInput:true}));
                 break;
             }
             default:
@@ -109,7 +110,7 @@ class OrganizationEditor extends React.Component {
     selectedParentChanged = (selection) => this.tempParent = selection;
 
     onOrgDialogClose() {
-        this.setState({organization: {...this.state.organization, parent: this.tempParent !== '' ? this.tempParent : null}, openOrgDialog:false});
+        this.setState({organization: {...this.state.organization, parent: this.tempParent !== '' ? this.tempParent : null}, madeChanges:true, openOrgDialog:false});
     }
 
     parentBtnClicked = () => this.setState({openOrgDialog: true})
@@ -155,7 +156,7 @@ class OrganizationEditor extends React.Component {
                                 }
                             </Button>
                             <Button
-                                disabled={this.state.wrongInput}
+                                disabled={!this.state.madeChanges || this.state.wrongInput}
                                 onClick={this.submit}
                             >
                                 Сохранить

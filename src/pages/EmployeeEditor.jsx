@@ -25,12 +25,14 @@ class EmployeeEditor extends React.Component {
                 id: this.updating ? props.match.params.id: null, name: "",
                 organization:null, chief:null
             },
+            madeChanges: false,
             openChiefDialog: false,
             openOrgDialog: false,
             organization: null,
             redirect: false,
             waitingResponse: this.updating,
-            wrongInput: false
+            wrongName: true,
+            wrongOrg: true
         }
         this.handleResponseOnInfoRequest = this.handleResponseOnInfoRequest.bind(this);
         this.handleResponseOnOrgInfo = this.handleResponseOnOrgInfo.bind(this);
@@ -100,7 +102,8 @@ class EmployeeEditor extends React.Component {
         this.setState({
             employee: { 
                 ...this.state.employee, name: event.target.value},
-            wrongInput: !event.target.value || !this.state.employee.organization
+            madeChanges: true,
+            wrongName: !event.target.value
         });
 
     handleResponseOnInfoRequest(response) {
@@ -109,7 +112,7 @@ class EmployeeEditor extends React.Component {
                 response.json().then(json => {
                     this.tempChief = json.data.chief;
                     this.tempOrganization = json.data.organization;
-                    this.setState({employee: json.data, waitingResponse:false});
+                    this.setState({employee: json.data, waitingResponse:false, wrongName: false, wrongOrg: false});
                 });
                 break;
             }
@@ -156,8 +159,9 @@ class EmployeeEditor extends React.Component {
                     chief: this.state.employee.organization === this.tempOrganization ? this.state.employee.chief : null, 
                     organization: this.tempOrganization === '' ? null : this.tempOrganization
                 }, 
+                madeChanges: true,
                 openOrgDialog:false,
-                wrongInput: !this.state.employee.name || !this.tempOrganization
+                wrongOrg: !this.tempOrganization
             });
     }
 
@@ -166,7 +170,8 @@ class EmployeeEditor extends React.Component {
             {
                 employee: {
                     ...this.state.employee, chief: this.tempChief === '' ? null : this.tempChief
-                }, 
+                },
+                madeChanges: true,
                 openChiefDialog:false
             });
     }
@@ -198,8 +203,8 @@ class EmployeeEditor extends React.Component {
                         <FormControl>
                             { typeof this.state.error == "undefined" ? null : <p>{this.state.error}</p>}
                             <TextField
-                                error={this.state.wrongInput}
-                                helperText={this.state.wrongInput ? "Название не может быть пустым" : null }
+                                error={this.state.wrongName}
+                                helperText={this.state.wrongName ? "Название не может быть пустым" : null }
                                 label="Название организации"
                                 onChange={this.nameChangeHandler}
                                 value={this.state.organization.name}
@@ -231,7 +236,7 @@ class EmployeeEditor extends React.Component {
                                 }
                             </Button>
                             <Button
-                                disabled={this.state.wrongInput}
+                                disabled={!this.madeChanges || this.state.wrongName || this.state.wrongOrg}
                                 onClick={this.submit}
                             >
                                 Сохранить
