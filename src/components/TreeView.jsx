@@ -26,6 +26,7 @@ class TreeView extends React.Component {
             nodes: new Map([[null, { label: props.root }]]),
             selectedNodes: []
         }
+        this.expansionStates = new Map();
         this.handleChildrenResponse = this.handleChildrenResponse.bind(this);
         this.updateNode = this.updateNode.bind(this);
     }
@@ -50,20 +51,24 @@ class TreeView extends React.Component {
     handleSelection = (event, nodeIds) => this.setState({selectedNodes: nodeIds});
     handleToggle = (event, nodeIds) => this.setState({expandedNodes: nodeIds});
 
+    onIconClicked(id) {
+        this.expansionStates.put(id, !this.expansionStates.has(id) || !this.expansionStates.get(id));
+        if (this.expansionStates.get(id) && typeof this.state.nodes.get(id).children == "undefined")
+            this.requestNodeChildren(id);
+    }
+
     requestNodeChildren(id) {
-        if (typeof this.state.nodes.get(id).children == "undefined") {
-            this.updateNodeError(null);
-            this.props.elementProvider(id)
+        this.updateNodeError(null);
+        this.props.elementProvider(id)
             .then((response) => this.handleChildrenResponse(id, response))
             .catch(error => this.updateNodeError(id, "Нет соединения с сервером"));
-        }
     }
 
     traverseNode = (id) =>
         <TreeItem
             label = {this.state.nodes.get(id).label}
             nodeId = {id ? id : ''}
-            onIconClick = { () => { this.requestNodeChildren(id)}}
+            onIconClick = { () => { this.onIconClicked(id)}}
         >
             {
                 this.state.nodes.get(id).error ?  
@@ -88,10 +93,10 @@ class TreeView extends React.Component {
         if (data.length === 0)
             this.setState(
                 {
-                    nodes: new Map(
-                        ...this.state.nodes.entries(), 
+                    nodes: new Map([
+                        ...this.state.nodes, 
                         [id, {...this.state.nodes.get(id), children: []}]
-                    )
+                    ])
                 }
             );
         const newChildren = data.map(element => this.props.keyProvider(element.value));
