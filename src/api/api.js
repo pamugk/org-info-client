@@ -1,4 +1,4 @@
-const API = "http://localhost:8081/api";
+const API = "https://org-info-server.herokuapp.com/api";
 
 const cleanUp = obj => Object.keys(obj).forEach(key => obj[key] === undefined ? delete obj[key] : {});
 

@@ -1,20 +1,25 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 
 import Alert from '@material-ui/lab/Alert';
 import TreeItem from '@material-ui/lab/TreeItem';
 import MuiTreeView from '@material-ui/lab/TreeView';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import EditIcon from '@material-ui/icons/Edit';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 class TreeView extends React.Component {
     static propTypes = {
         elementProvider: PropTypes.func.isRequired,
         elementStringifier: PropTypes.func.isRequired,
+        itemPathProvider: PropTypes.func.isRequired,
         keyProvider: PropTypes.func.isRequired,
         root: PropTypes.string
     }
@@ -28,6 +33,7 @@ class TreeView extends React.Component {
         }
         this.expansionStates = new Map();
         this.handleChildrenResponse = this.handleChildrenResponse.bind(this);
+        this.refreshNodeChildren = this.refreshNodeChildren.bind(this);
         this.updateNode = this.updateNode.bind(this);
     }
     
@@ -57,8 +63,21 @@ class TreeView extends React.Component {
             this.requestNodeChildren(id);
     }
 
+    redirectToItem = (id) => this.setState({redirect: this.props.itemPathProvider(id)});
+
+    refreshNodeChildren(id) {
+        this.setState({
+            nodes: new Map([
+                ...this.state.nodes, 
+                [id, {...this.state.nodes.get(id),  children: undefined, error: null}]
+            ])
+        });
+        this.requestNodeChildren(id);
+    }
+
     requestNodeChildren(id) {
-        this.updateNodeError(null);
+        if (this.state.nodes.get(id).error)
+            this.updateNodeError(null);
         this.props.elementProvider(id)
             .then((response) => this.handleChildrenResponse(id, response))
             .catch(error => this.updateNodeError(id, "Нет соединения с сервером"));
@@ -71,6 +90,22 @@ class TreeView extends React.Component {
             nodeId = {id ? id : ''}
             onIconClick = { () => { this.onIconClicked(id)}}
         >
+            <Box>
+                {
+                    id ?
+                    <IconButton onClick={() => this.redirectToItem(id)} size="small">
+                        <EditIcon />
+                    </IconButton> : null
+                }
+                {
+                    typeof this.state.nodes.get(id).children != "undefined" ||
+                    this.state.nodes.get(id).error ?
+                    <IconButton onClick={() => this.refreshNodeChildren(id)} size="small">
+                        <RefreshIcon />
+                    </IconButton> : 
+                    null
+                }
+            </Box>
             {
                 this.state.nodes.get(id).error ?  
                 <Alert component={Box} margin="auto" severity="info">{this.state.nodes.get(id).error}</Alert> :
@@ -96,10 +131,11 @@ class TreeView extends React.Component {
             new Set(typeof this.state.nodes.get(id).children == "undefined" ? [] :
             [...this.state.nodes.get(id).children.filter(key => !newChildren.includes(key))
             .map(key => this.traverseNodeIds(key))]);
+        this.expansionStates = new Map([...this.expansionStates].filter(pair => !redundantNodeIds.has(pair.key)));
         this.setState(
             {
-                selectedNodes: this.state.selectedNodes.filter(node => !redundantNodeIds.has(node)),
-                expandedNodes: this.state.expandedNodes.filter(node => !redundantNodeIds.has(node)),
+                selectedNodes: [...this.state.selectedNodes].filter(node => !redundantNodeIds.has(node)),
+                expandedNodes: [...this.state.expandedNodes].filter(node => !redundantNodeIds.has(node)),
                 nodes: new Map([
                     ...[...this.state.nodes].filter(pair => !redundantNodeIds.has(pair.key)),
                     [id, {...this.state.nodes.get(id), children: newChildren}],
@@ -127,7 +163,8 @@ class TreeView extends React.Component {
         ])
     });
 
-    render = () => (
+    render = () => this.state.redirect ? 
+        <Redirect to={this.state.redirect} />: (
         <MuiTreeView
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}

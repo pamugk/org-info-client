@@ -141,7 +141,6 @@ class SearchableTable extends React.Component {
                     <Dialog
                         onClose={() => this.setState({deleting: undefined, elements: this.state.deleting.reload ? undefined : this.state.elements})}
                         open={true}
-                        //severity={this.state.deleting.success ? "success" : "warning"}
                     >
                         <DialogContent>
                             <DialogContentText>

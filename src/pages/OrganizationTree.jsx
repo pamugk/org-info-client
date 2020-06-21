@@ -8,6 +8,7 @@ const OrganizationTree = () =>
     <TreeView
         elementProvider={getOrganizationTree}
         elementStringifier={(organization) => organization.name}
+        itemPathProvider={(id) => `/organizations/${id}`}
         keyProvider={(organization) => organization.id} 
         root="Организации"
     />;
