@@ -52,7 +52,7 @@ class TreeView extends React.Component {
     handleToggle = (event, nodeIds) => this.setState({expandedNodes: nodeIds});
 
     onIconClicked(id) {
-        this.expansionStates.put(id, !this.expansionStates.has(id) || !this.expansionStates.get(id));
+        this.expansionStates.set(id, !this.expansionStates.has(id) || !this.expansionStates.get(id));
         if (this.expansionStates.get(id) && typeof this.state.nodes.get(id).children == "undefined")
             this.requestNodeChildren(id);
     }
@@ -66,6 +66,7 @@ class TreeView extends React.Component {
 
     traverseNode = (id) =>
         <TreeItem
+            key={id ? id : ''}
             label = {this.state.nodes.get(id).label}
             nodeId = {id ? id : ''}
             onIconClick = { () => { this.onIconClicked(id)}}
@@ -90,15 +91,6 @@ class TreeView extends React.Component {
     updateNode(id, data) {
         if (!this.state.nodes.has(id))
             return;
-        if (data.length === 0)
-            this.setState(
-                {
-                    nodes: new Map([
-                        ...this.state.nodes, 
-                        [id, {...this.state.nodes.get(id), children: []}]
-                    ])
-                }
-            );
         const newChildren = data.map(element => this.props.keyProvider(element.value));
         const redundantNodeIds = 
             new Set(typeof this.state.nodes.get(id).children == "undefined" ? [] :
@@ -110,7 +102,8 @@ class TreeView extends React.Component {
                 expandedNodes: this.state.expandedNodes.filter(node => !redundantNodeIds.has(node)),
                 nodes: new Map([
                     ...[...this.state.nodes].filter(pair => !redundantNodeIds.has(pair.key)),
-                    ...newChildren.map(
+                    [id, {...this.state.nodes.get(id), children: newChildren}],
+                    ...data.map(
                         child => [
                             this.props.keyProvider(child.value),
                             this.state.nodes.has(this.props.keyProvider(child.value)) ? {
