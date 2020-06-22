@@ -1,4 +1,6 @@
-const API = "https://org-info-server.herokuapp.com/api";
+import SERVER from '../setup';
+
+const API = `${SERVER}/api`;
 
 const cleanUp = obj => Object.keys(obj).forEach(key => obj[key] === undefined ? delete obj[key] : {});
 
