@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
             }}
             onChange={props.onChange}
             onKeyPress={props.onKeyPress}
-            placeholder="Поиск..."
+            placeholder={typeof props.placeholder == "undefined" ? "Поиск..." : props.placeholder}
             value={props.value}
         />
     </div>;
@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
   SearchBar.propTypes = {
     onChange: PropTypes.func,
     onKeyPress: PropTypes.func,
+    placeholder: PropTypes.string,
     value: PropTypes.string.isRequired
   };
 

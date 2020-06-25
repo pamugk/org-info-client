@@ -22,6 +22,7 @@ const OrganizationTable = (props) => {
         <SearchBar
             onChange={searchNameChanged}
             onKeyPress={searchKeyPressed}
+            placeholder="Поиск по названию..."
             value={searchName}
         />
         <SearchableTable

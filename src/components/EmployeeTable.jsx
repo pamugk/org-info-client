@@ -25,6 +25,7 @@ const EmployeeTable = (props) => {
         <SearchBar
             onChange={searchNameChanged}
             onKeyPress={searchKeyPressed}
+            placeholder="Поиск по имени..."
             value={searchName}
         />
         {
@@ -32,6 +33,7 @@ const EmployeeTable = (props) => {
             <SearchBar
                 onChange={searchOrgChanged}
                 onKeyPress={searchKeyPressed}
+                placeholder="Поиск по организации..."
                 value={searchOrg}
             /> : null
         }
