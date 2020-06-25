@@ -8,11 +8,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
-import SearchableTable from '../components/SearchableTable';
 import TextField from '@material-ui/core/TextField';
 
-import { createOrganization, getOrganizationList, fetchOrganizationInfo, updateOrganization } from '../api/api';
+import { createOrganization, fetchOrganizationInfo, updateOrganization } from '../api/api';
 import { DialogTitle } from '@material-ui/core';
+import OrganizationTable from '../components/OrganizationTable';
 
 class OrganizationEditor extends React.Component {
     constructor(props) {
@@ -124,12 +124,11 @@ class OrganizationEditor extends React.Component {
     
     static header = [
         {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
-        {id:"parent", label:"Головная организация"}];
+        {id:"parentId", label:"ID головной организации"},{id:"parent", label:"Головная организация"}];
     static disassembleOrganization = organization =>  [
         {id:"id",value:organization.id}, {id:"name", value:organization.name}, 
-        {id:"parentName", value: organization.parentName}
+        {id:"parentId", value: organization.parentId},{id:"parentName", value: organization.parentName}
     ];
-    static organizationKey = (organization) => organization.id;
 
     render = () => this.state.redirect ?
         <Redirect to="/organizations/list" /> : (
@@ -173,13 +172,10 @@ class OrganizationEditor extends React.Component {
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
                             <DialogTitle>Выберите головную организацию</DialogTitle>
                             <DialogContent>
-                                <SearchableTable
+                                <OrganizationTable
                                     disassemble={OrganizationEditor.disassembleOrganization}
-                                    elementProvider={getOrganizationList}
                                     exclude={this.state.organization.id}
-                                    fetchCount={5}
                                     header={OrganizationEditor.header}
-                                    keyProvider={OrganizationEditor.organizationKey}
                                     selected={this.state.organization.parent}
                                     selection={true}
                                     onSelectionChanged={this.selectedParentChanged}

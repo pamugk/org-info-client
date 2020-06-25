@@ -9,7 +9,7 @@ const OrganizationTree = () =>
         elementProvider={getOrganizationTree}
         elementStringifier={(organization) => organization.name}
         itemPathProvider={(id) => `/organizations/${id}`}
-        keyProvider={(organization) => organization.id} 
+        keyProvider={(organization) => organization.id}
         root="Организации"
     />;
 

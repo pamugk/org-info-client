@@ -8,14 +8,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
-import SearchableTable from '../components/SearchableTable';
 import TextField from '@material-ui/core/TextField';
 
 import { 
-    createEmployee, getOrganizationList, getEmployeeList, 
-    fetchEmployeeInfo, fetchOrganizationInfo, updateEmployee
+    createEmployee, fetchEmployeeInfo, fetchOrganizationInfo, updateEmployee
 } from '../api/api';
 import { DialogTitle } from '@material-ui/core';
+import OrganizationTable from '../components/OrganizationTable';
+import EmployeeTable from '../components/EmployeeTable';
 
 class EmployeeEditor extends React.Component {
     constructor(props) {
@@ -186,16 +186,23 @@ class EmployeeEditor extends React.Component {
             .then(this.handleResponseOnSubmitRequest)
             .catch(error => this.setState({error: "Нет соединения с сервером, попробуйте позднее", waitingResponse:false}));
     
-    static orgHeader = [
-        {id:"id", label:"ID"}, {id:"name", label:"Название организации"}, {id:"parent", label:"Головная организация"}];
-    static disassembleOrganization = organization => [organization.id, organization.name, organization.parentName];
-    static organizationKey = (organization) => organization.id;
-    
-    static empHeader = [{id:"id", label:"ID"}, {id:"name", label:"Имя сотрудника"}, {id:"chief", label:"Руководитель"}];
-    static disassembleEmployee = employee =>  [
-        {id: "id", value:employee.id}, {id: "name", value: employee.name}, {id:"chief", value:employee.chief}
+    static header = [
+        {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
+        {id:"parentId", label:"ID головной организации"},{id:"parentName", label:"Головная организация"}];
+    static disassembleOrganization = organization => [
+        {id:"id",value:organization.id}, {id:"name", value:organization.name}, 
+        {id:"parentId", value: organization.parentId}, {id:"parentName", value: organization.parentName},
     ];
-    static employeeKey = (employee) => employee.id;
+    
+    static empHeader = [
+        {id: "id", label: "ID"}, {id: "name", label: "Имя сотрудника"},
+        {id:"orgId", label: "ID организации"}, {id: "orgName", label:"Организация"},
+        {id:"chiefId", label: "ID руководителя"}, {id:"chiefName", label: "Руководитель"}];
+    static disassembleEmployee = employee => [
+        {id: "id", value:employee.id}, {id: "name", value: employee.name},
+        {id:"orgId",value:employee.organization}, {id:"organizationName", value: employee.organizationName}, 
+        {id:"chiefId", value: employee.chief}, {id:"chiefName", value:employee.chiefName}
+    ];
 
     render = () => this.state.redirect ?
         <Redirect to="/employees/list" /> : (
@@ -211,7 +218,7 @@ class EmployeeEditor extends React.Component {
                             }
                             <TextField
                                 error={this.state.wrongName}
-                                helperText={this.state.wrongName ? "Название не может быть пустым" : null }
+                                helperText={this.state.wrongName ? "Имя не может быть пустым" : null }
                                 label="Название организации"
                                 onChange={this.nameChangeHandler}
                                 value={this.state.organization.name}
@@ -220,9 +227,9 @@ class EmployeeEditor extends React.Component {
                                 onClick={this.orgBtnClicked}
                             >
                                 {
-                                    !this.state.employee.organization ? "Для сотрудника не выбрано организации" :
                                     typeof this.state.organization === "undefined" ?
                                     "Выбранная организация была кем-то удалена. Советуем поменять ваш выбор" :
+                                    !this.state.employee.organization ? "Для сотрудника не выбрано организации" :
                                     <>
                                         {`Идентификатор организации: ${this.state.employee.organization}.`}<br/>
                                         {`Название ${this.state.parent ? `'${this.state.parent}'` : "пока загружается"}`}
@@ -233,9 +240,9 @@ class EmployeeEditor extends React.Component {
                                 onClick={this.chiefBtnClicked}
                             >
                                 {
-                                    !this.state.employee.organization ? "Для сотрудника не выбрано руководителя" :
                                     typeof this.state.chief === "undefined" ?
-                                    "Выбранный вами в качестве руководителя сотрудник был кем-то удалена. Советуем поменять ваш выбор" :
+                                    "Выбранный вами в качестве руководителя сотрудник был кем-то удалён. Советуем поменять ваш выбор" :
+                                    !this.state.employee.organization ? "Для сотрудника не выбрано руководителя" :
                                     <>
                                         {`Идентификатор руководителя: ${this.state.employee.organization}.`}<br/>
                                         {`Имя ${this.state.parent ? `'${this.state.parent}'` : "пока загружается"}`}
@@ -252,13 +259,10 @@ class EmployeeEditor extends React.Component {
                         <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
                             <DialogTitle>Выберите организацию</DialogTitle>
                             <DialogContent>
-                                <SearchableTable
+                                <OrganizationTable
                                     deletion={false}
                                     disassemble={EmployeeEditor.disassembleOrganization}
-                                    elementProvider={getOrganizationList}
-                                    fetchCount={5}
                                     header={EmployeeEditor.orgHeader}
-                                    keyProvider={EmployeeEditor.organizationKey}
                                     selected={this.state.employee.organization}
                                     selection={true}
                                     onSelectionChanged={this.selectedOrganizationChanged}
@@ -268,17 +272,15 @@ class EmployeeEditor extends React.Component {
                         <Dialog onClose={this.onChiefDialogClose} open={this.state.openChiefDialog}>
                             <DialogTitle>Выберите руководителя</DialogTitle>
                             <DialogContent>
-                                <SearchableTable
+                                <EmployeeTable
                                     deletion={false}
                                     disassemble={EmployeeEditor.disassembleEmployee}
-                                    elementProvider={getEmployeeList}
-                                    exclude={[this.state.employee.id, this.state.employee.organization]}
-                                    fetchCount={5}
+                                    exclude={[this.state.employee.id]}
                                     header={EmployeeEditor.empHeader}
-                                    keyProvider={EmployeeEditor.employeeKey}
                                     selected={this.state.employee.chief}
                                     selection={true}
                                     onSelectionChanged={this.selectedChiefChanged}
+                                    orgId={this.state.employee.organization == null ? undefined : this.state.employee.organization}
                                 />
                             </DialogContent>
                         </Dialog>

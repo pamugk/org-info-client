@@ -16,7 +16,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import SearchBar from './SearchBar';
 import { Radio } from '@material-ui/core';
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -24,25 +23,27 @@ import EditIcon from '@material-ui/icons/Edit';
 
 class SearchableTable extends React.Component {
     static propTypes = {
+        countOptions: PropTypes.array.isRequired,
         deletion: PropTypes.bool.isRequired,
         disassemble: PropTypes.func.isRequired,
-        editRedirection: PropTypes.func,
         elementProvider: PropTypes.func.isRequired,
         exclude: PropTypes.string,
-        fetchCount: PropTypes.number.isRequired,
+        itemRedirection: PropTypes.func,
         header: PropTypes.array.isRequired,
         keyProvider: PropTypes.func.isRequired,
         removator: PropTypes.func,
+        search: PropTypes.object,
         selection: PropTypes.bool.isRequired,
         selected: PropTypes.string,
+        startFetchCount: PropTypes.number.isRequired,
         onSelectionChanged: PropTypes.func
     };
 
     constructor(props) {
         super(props);
         this.state = {
+            fetchCount: props.startFetchCount,
             page: 0,
-            search: "",
             selected: props.selected
         };
         this.keyHandler = this.keyHandler.bind(this);
@@ -61,7 +62,7 @@ class SearchableTable extends React.Component {
         this.props.elementProvider(
             {
                 offset: this.state.page * this.props.fetchCount, limit: this.props.fetchCount,
-                search: this.state.search ? this.state.search : undefined, exclude: this.props.exclude
+                ...this.props.search
             })
                 .then(this.handleResponse)
                 .catch(error => this.setState({elements: false}));
@@ -69,9 +70,12 @@ class SearchableTable extends React.Component {
     
     handleResponse(response) {
         switch(response.status) {
-            case 200: 
-                response.json().then(json => this.setState({elements: json.data}));
+            case 200: {
+                response.json().then(json => this.setState({
+                    elements: json.data.filter(element => this.props.keyProvider(element) !== this.props.exclude)
+                }));
                 break;
+            }
             default:
                 this.setState({elements: false});
                 break;
@@ -122,9 +126,6 @@ class SearchableTable extends React.Component {
     }
 
     render = () =>
-    <>
-        <SearchBar onChange={this.changeHandler} onKeyPress={this.keyHandler} value={this.state.search} />
-        {
             typeof this.state.elements == 'undefined' ? <Box margin="auto"><CircularProgress /></Box> :
             this.state.elements === false ? 
             <Alert component={Box} margin="auto" severity="error">
@@ -201,16 +202,21 @@ class SearchableTable extends React.Component {
                 </Table>
                 <TablePagination
                     component={Box}
-                    count={this.state.elements.totalCount}
+                    count={this.state.elements.totalCount - (typeof this.props.exclude === "undefined" ? 0 : 1)}
                     marginTop="auto"
                     onChangePage={this.pageChanged}
+                    onChangeRowsPerPage={this.rowsPerPageChanged}
                     page={this.state.page} 
                     rowsPerPage={this.props.fetchCount}
-                    rowsPerPageOptions={[this.props.fetchCount]} 
+                    rowsPerPageOptions={this.props.countOptions} 
                 />
-            </TableContainer>
-        }
-    </>
+            </TableContainer>;
+    
+    rowsPerPageChanged = (event) => this.setState({
+        elements: undefined, 
+        fetchCount: parseInt(event.target.value, 10), 
+        page: 0 
+    });
 };
 
 export default SearchableTable;

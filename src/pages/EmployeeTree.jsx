@@ -10,6 +10,7 @@ const EmployeeTree = () =>
         elementStringifier={(employee) => employee.name}
         itemPathProvider={(id) => `/employees/${id}`}
         keyProvider={(employee) => employee.id} 
+        limit={5}
         root="Сотрудники"
     />;
 

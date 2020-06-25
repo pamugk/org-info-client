@@ -1,27 +1,19 @@
 import React from 'react';
-import { deleteOrganization, getOrganizationList } from '../api/api';
-import SearchableTable from '../components/SearchableTable';
+import OrganizationTable from '../components/OrganizationTable';
 
 const OrganizationList = () => {
     const header = [
-        {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
-        {id:"parent", label:"Головная организация"}, {id:"countOfEmployees", label:"Количество сотрудников"}];
+        {id:"id", label:"ID"}, {id:"name", label:"Название организации"}, {id:"parentId", label:"ID головной организации"},
+        {id:"parentName", label:"Головная организация"}, {id:"countOfEmployees", label:"Количество сотрудников"}];
     const disassembleOrganization = organization => [
-        {id:"id",value:organization.id}, {id:"name", value:organization.name}, 
+        {id:"id",value:organization.id}, {id:"name", value:organization.name},  {id:"parentId", value: organization.parentId},
         {id:"parentName", value: organization.parentName}, {id:"employeeCount", value:organization.employeeCount}
     ];
-    const organizationKey = (organization) => organization.id;
-    const organizationEditRedirection = (organization) => `/organizations/${organization.id}`;
 
-    return <SearchableTable
+    return <OrganizationTable
         deletion={true}
         disassemble = {disassembleOrganization}
-        editRedirection={organizationEditRedirection}
-        elementProvider = {getOrganizationList}
-        fetchCount = {10}
         header = {header}
-        keyProvider = {organizationKey}
-        removator = {deleteOrganization}
         selection = {false}
     />;
 };

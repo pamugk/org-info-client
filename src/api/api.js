@@ -30,8 +30,8 @@ export const fetchOrganizationInfo = (id) => sendParamsRequest('organizations', 
 export const getEmployeeList = (params) => sendParamsRequest('employees/list', 'GET', params);
 export const getOrganizationList = (params) => sendParamsRequest('organizations/list', 'GET', params);
 
-export const getEmployeeTree = (id) => sendParamsRequest('employees/tree', 'GET', {id:id?id:undefined});
-export const getOrganizationTree = (id) => sendParamsRequest('organizations/tree', 'GET', {id: (id ? id : undefined)});
+export const getEmployeeTree = (params) => sendParamsRequest('employees/tree', 'GET', params);
+export const getOrganizationTree = (params) => sendParamsRequest('organizations/tree', 'GET', params);
 
 export const updateEmployee = (employee) => sendObject('employees', 'PUT', employee);
 export const updateOrganization = (organization) => sendObject('organizations', 'PUT', organization);
