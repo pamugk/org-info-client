@@ -31,7 +31,7 @@ class TreeView extends React.Component {
         super(props);
         this.state = {
             expandedNodes: [],
-            nodes: new Map([[null, { label: props.root }]]),
+            nodes: new Map([[null, { label: props.root, page: 0 }]]),
             selectedNodes: []
         }
         this.expansionStates = new Map();
@@ -81,7 +81,11 @@ class TreeView extends React.Component {
     requestNodeChildren(id) {
         if (this.state.nodes.get(id).error)
             this.updateNodeError(null);
-        this.props.elementProvider({id:id?id:undefined, limit:this.props.limit})
+        this.props.elementProvider({
+                id:id?id:undefined, 
+                limit:this.props.limit, 
+                offset: typeof this.props.limit == "undefined" ? undefined : this.props.limit * this.state.nodes.get(id).page
+            })
             .then((response) => this.handleChildrenResponse(id, response))
             .catch(error => this.updateNodeError(id, "Нет соединения с сервером"));
     }
@@ -110,7 +114,7 @@ class TreeView extends React.Component {
                 }
             </Box>
             {
-                this.state.nodes.get(id).page > 0 ?
+                typeof this.props.limit != "undefined" && this.state.nodes.get(id).page > 0 ?
                 <IconButton onClick={() => this.refreshNodeChildren(id, this.state.nodes.get(id).page - 1)}>
                     <ArrowUpward />
                 </IconButton> : 
@@ -127,7 +131,7 @@ class TreeView extends React.Component {
             }
             {
                 typeof this.props.limit != "undefined" &&
-                    this.state.nodes.get(id).page * this.props.limit < this.state.nodes.get(id).totalCount ?
+                    (this.state.nodes.get(id).page + 1) * this.props.limit < this.state.nodes.get(id).totalCount ?
                 <IconButton onClick={() => this.refreshNodeChildren(id, this.state.nodes.get(id).page + 1)}>
                     <ArrowDownward />
                 </IconButton> : null
