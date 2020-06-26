@@ -82,7 +82,7 @@ class EmployeeEditor extends React.Component {
     }
 
     requestChiefInfo = () => 
-        fetchOrganizationInfo(this.state.employee.chief)
+        fetchEmployeeInfo(this.state.employee.chief)
             .then(this.handleResponseOnChiefInfo)
             .catch(error => this.setState({error: "Соединение с сервером потеряно на неопределённое время"}));
 
@@ -102,8 +102,7 @@ class EmployeeEditor extends React.Component {
 
     nameChangeHandler = (event) =>
         this.setState({
-            employee: { 
-                ...this.state.employee, name: event.target.value},
+            employee: { ...this.state.employee, name: event.target.value},
             madeChanges: true,
             wrongName: !event.target.value
         });
@@ -158,17 +157,21 @@ class EmployeeEditor extends React.Component {
             {
                 employee: {
                     ...this.state.employee,
-                    chief: this.state.employee.organization === this.tempOrganization ? this.state.employee.chief : null, 
+                    chief: this.tempOrganization === '' || 
+                        this.state.employee.organization === this.tempOrganization ? 
+                        this.state.employee.chief : null, 
                     organization: this.tempOrganization === '' ? null : this.tempOrganization
                 }, 
                 madeChanges: true,
-                openOrgDialog:false
+                openOrgDialog:false,
+                organization: this.tempOrganization === this.state.employee.organization ? this.state.organization : null
             });
     }
 
     onChiefDialogClose() {
         this.setState(
             {
+                chief: this.tempChief === this.state.employee.chief ? this.state.chief : null,
                 employee: {
                     ...this.state.employee, chief: this.tempChief === '' ? null : this.tempChief
                 },
