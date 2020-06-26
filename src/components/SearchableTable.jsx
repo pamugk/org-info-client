@@ -61,7 +61,9 @@ class SearchableTable extends React.Component {
     sendRequest() {
         this.props.elementProvider(
             {
-                offset: this.state.page * this.props.fetchCount, limit: this.props.fetchCount,
+                offset: typeof this.state.fetchCount != "undefined" ?
+                 this.state.page * this.state.fetchCount : undefined,
+                 limit: this.state.fetchCount,
                 ...this.props.search
             })
                 .then(this.handleResponse)
@@ -207,7 +209,7 @@ class SearchableTable extends React.Component {
                     onChangePage={this.pageChanged}
                     onChangeRowsPerPage={this.rowsPerPageChanged}
                     page={this.state.page} 
-                    rowsPerPage={this.props.fetchCount}
+                    rowsPerPage={this.state.fetchCount}
                     rowsPerPageOptions={this.props.countOptions} 
                 />
             </TableContainer>;
