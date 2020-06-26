@@ -63,7 +63,7 @@ class TreeView extends React.Component {
     onIconClicked(id) {
         this.expansionStates.set(id, !this.expansionStates.has(id) || !this.expansionStates.get(id));
         if (this.expansionStates.get(id) && typeof this.state.nodes.get(id).children == "undefined")
-            this.requestNodeChildren(id);
+            this.requestNodeChildren(id, this.state.nodes.get(id).page);
     }
 
     redirectToItem = (id) => this.setState({redirect: this.props.itemPathProvider(id)});
@@ -75,16 +75,16 @@ class TreeView extends React.Component {
                 [id, {...this.state.nodes.get(id), children: undefined, error: null, page: page, totalCount: undefined}]
             ])
         });
-        this.requestNodeChildren(id);
+        this.requestNodeChildren(id, page);
     }
 
-    requestNodeChildren(id) {
+    requestNodeChildren(id, page) {
         if (this.state.nodes.get(id).error)
             this.updateNodeError(null);
         this.props.elementProvider({
                 id:id?id:undefined, 
                 limit:this.props.limit, 
-                offset: typeof this.props.limit == "undefined" ? undefined : this.props.limit * this.state.nodes.get(id).page
+                offset: typeof this.props.limit == "undefined" ? undefined : this.props.limit * page
             })
             .then((response) => this.handleChildrenResponse(id, response))
             .catch(error => this.updateNodeError(id, "Нет соединения с сервером"));
