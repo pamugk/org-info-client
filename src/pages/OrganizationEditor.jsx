@@ -25,7 +25,7 @@ class OrganizationEditor extends React.Component {
             parent: null,
             redirect: false,
             waitingResponse: this.updating,
-            wrongInput: false
+            wrongInput: true
         }
         this.handleResponseOnInfoRequest = this.handleResponseOnInfoRequest.bind(this);
         this.handleResponseOnSubmitRequest = this.handleResponseOnSubmitRequest.bind(this);

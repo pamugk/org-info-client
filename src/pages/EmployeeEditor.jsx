@@ -220,9 +220,9 @@ class EmployeeEditor extends React.Component {
                             <TextField
                                 error={this.state.wrongName}
                                 helperText={this.state.wrongName ? "Имя не может быть пустым" : null }
-                                label="Название организации"
+                                label="Имя сотрудника"
                                 onChange={this.nameChangeHandler}
-                                value={this.state.organization.name}
+                                value={this.state.employee.name}
                             />
                             <Button
                                 onClick={this.orgBtnClicked}
