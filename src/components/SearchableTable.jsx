@@ -73,9 +73,16 @@ class SearchableTable extends React.Component {
     handleResponse(response) {
         switch(response.status) {
             case 200: {
-                response.json().then(json => this.setState({
-                    elements: json.data.filter(element => this.props.keyProvider(element) !== this.props.exclude)
-                }));
+                response.json().then(json => {
+                    console.log(json);
+                    this.setState({
+                        elements: {
+                            dataChunk: json.data.dataChunk.filter(element => this.props.keyProvider(element) !== this.props.exclude),
+                            totalCount: json.data.totalCount
+                        }
+                    });
+                }
+                    );
                 break;
             }
             default:
