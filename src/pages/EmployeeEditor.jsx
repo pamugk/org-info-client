@@ -33,8 +33,7 @@ class EmployeeEditor extends React.Component {
             organization: null,
             redirect: false,
             waitingResponse: this.updating,
-            wrongName: true,
-            wrongOrg: true
+            wrongName: true
         }
         this.handleResponseOnInfoRequest = this.handleResponseOnInfoRequest.bind(this);
         this.handleResponseOnOrgInfo = this.handleResponseOnOrgInfo.bind(this);
@@ -114,7 +113,7 @@ class EmployeeEditor extends React.Component {
                 response.json().then(json => {
                     this.tempChief = json.data.chief;
                     this.tempOrganization = json.data.organization;
-                    this.setState({employee: json.data, waitingResponse:false, wrongName: false, wrongOrg: false});
+                    this.setState({employee: json.data, waitingResponse:false, wrongName: false});
                 });
                 break;
             }
@@ -162,8 +161,7 @@ class EmployeeEditor extends React.Component {
                     organization: this.tempOrganization === '' ? null : this.tempOrganization
                 }, 
                 madeChanges: true,
-                openOrgDialog:false,
-                wrongOrg: !this.tempOrganization
+                openOrgDialog:false
             });
     }
 
@@ -250,7 +248,7 @@ class EmployeeEditor extends React.Component {
                                 }
                             </Button>
                             <Button
-                                disabled={!this.madeChanges || this.state.wrongName || this.state.wrongOrg}
+                                disabled={!this.madeChanges || this.state.wrongName}
                                 onClick={this.submit}
                             >
                                 Сохранить
