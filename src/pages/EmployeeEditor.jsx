@@ -260,7 +260,7 @@ class EmployeeEditor extends React.Component {
                                 Сохранить
                             </Button>
                         </FormControl>
-                        <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
+                        <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog} maxWidth={false}>
                             <DialogTitle>Выберите организацию</DialogTitle>
                             <DialogContent>
                                 <OrganizationTable
@@ -273,7 +273,7 @@ class EmployeeEditor extends React.Component {
                                 />
                             </DialogContent>
                         </Dialog>
-                        <Dialog onClose={this.onChiefDialogClose} open={this.state.openChiefDialog}>
+                        <Dialog onClose={this.onChiefDialogClose} open={this.state.openChiefDialog} maxWidth={false}>
                             <DialogTitle>Выберите руководителя</DialogTitle>
                             <DialogContent>
                                 <EmployeeTable

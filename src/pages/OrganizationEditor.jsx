@@ -174,7 +174,7 @@ class OrganizationEditor extends React.Component {
                                 Сохранить
                             </Button>
                         </FormControl>
-                        <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog}>
+                        <Dialog onClose={this.onOrgDialogClose} open={this.state.openOrgDialog} maxWidth={false}>
                             <DialogTitle>Выберите головную организацию</DialogTitle>
                             <DialogContent>
                                 <OrganizationTable
