@@ -187,7 +187,7 @@ class EmployeeEditor extends React.Component {
             .catch(error => this.setState({error: "Нет соединения с сервером, попробуйте позднее", waitingResponse:false}));
     } 
     
-    static header = [
+    static orgHeader = [
         {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
         {id:"parentId", label:"ID головной организации"},{id:"parentName", label:"Головная организация"}];
     static disassembleOrganization = organization => [
@@ -233,7 +233,7 @@ class EmployeeEditor extends React.Component {
                                     !this.state.employee.organization ? "Для сотрудника не выбрано организации" :
                                     <>
                                         {`Идентификатор организации: ${this.state.employee.organization}.`}<br/>
-                                        {`Название ${this.state.parent ? `'${this.state.parent}'` : "пока загружается"}`}
+                                        {`Название ${this.state.organization ? `'${this.state.organization}'` : "пока загружается"}`}
                                     </>
                                 }
                             </Button>
@@ -243,15 +243,15 @@ class EmployeeEditor extends React.Component {
                                 {
                                     typeof this.state.chief === "undefined" ?
                                     "Выбранный вами в качестве руководителя сотрудник был кем-то удалён. Советуем поменять ваш выбор" :
-                                    !this.state.employee.organization ? "Для сотрудника не выбрано руководителя" :
+                                    !this.state.employee.chief ? "Для сотрудника не выбрано руководителя" :
                                     <>
-                                        {`Идентификатор руководителя: ${this.state.employee.organization}.`}<br/>
-                                        {`Имя ${this.state.parent ? `'${this.state.parent}'` : "пока загружается"}`}
+                                        {`Идентификатор руководителя: ${this.state.employee.chief}.`}<br/>
+                                        {`Имя ${this.state.chief ? `'${this.state.chief}'` : "пока загружается"}`}
                                     </>
                                 }
                             </Button>
                             <Button
-                                disabled={!this.madeChanges || this.state.wrongName}
+                                disabled={this.state.wrongName}
                                 onClick={this.submit}
                             >
                                 Сохранить

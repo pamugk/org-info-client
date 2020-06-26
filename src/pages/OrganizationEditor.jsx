@@ -168,7 +168,7 @@ class OrganizationEditor extends React.Component {
                                 }
                             </Button>
                             <Button
-                                disabled={!this.state.madeChanges || this.state.wrongInput}
+                                disabled={this.state.wrongInput}
                                 onClick={this.submit}
                             >
                                 Сохранить
