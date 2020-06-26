@@ -59,6 +59,11 @@ class SearchableTable extends React.Component {
             this.sendRequest();
     }
 
+    UNSAFE_componentWillReceiveProps(newProps) {
+        if (newProps.search !== this.props.search)
+            this.setState({elements: undefined});
+    }
+
     sendRequest() {
         this.props.elementProvider(
             {
