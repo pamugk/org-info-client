@@ -171,10 +171,12 @@ class TreeView extends React.Component {
                             this.state.nodes.has(this.props.keyProvider(child.value)) ? {
                                 ...this.state.nodes.get(id), 
                                 label: this.props.elementStringifier(child.value),
-                                children: child.hasChildren ? this.state.nodes.get(id).children : []
+                                children: child.hasChildren ? this.state.nodes.get(id).children : [],
+                                page: 0
                             } : {
                                 label: this.props.elementStringifier(child.value),
-                                children: child.hasChildren ? undefined : []
+                                children: child.hasChildren ? undefined : [],
+                                page: 0
                             }
                         ]
                     )])
