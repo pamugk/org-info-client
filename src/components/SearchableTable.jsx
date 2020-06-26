@@ -49,6 +49,7 @@ class SearchableTable extends React.Component {
         this.keyHandler = this.keyHandler.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
         this.handleDeletionResponse = this.handleDeletionResponse.bind(this);
+        this.selectionChanged = this.selectionChanged.bind(this);
     }
 
     componentDidMount = () => this.sendRequest(); 
@@ -74,14 +75,14 @@ class SearchableTable extends React.Component {
         switch(response.status) {
             case 200: {
                 response.json().then(json => {
+                    const dif = typeof this.props.exclude == "undefined" ? 0 : 1;
                     this.setState({
                         elements: {
                             dataChunk: json.data.dataChunk.filter(element => this.props.keyProvider(element) !== this.props.exclude),
-                            totalCount: json.data.totalCount
+                            totalCount: json.data.totalCount - dif
                         }
                     });
-                }
-                    );
+                });
                 break;
             }
             default:
@@ -188,7 +189,7 @@ class SearchableTable extends React.Component {
                                                 onChange={this.selectionChanged}
                                                 value={this.props.keyProvider(element)}
                                             />:
-                                            <IconButton component={Link} to={this.props.editRedirection(element)}>
+                                            <IconButton component={Link} to={this.props.itemRedirection(element)}>
                                                 <EditIcon />
                                             </IconButton>
                                         }
@@ -210,7 +211,7 @@ class SearchableTable extends React.Component {
                 </Table>
                 <TablePagination
                     component={Box}
-                    count={this.state.elements.totalCount - (typeof this.props.exclude === "undefined" ? 0 : 1)}
+                    count={this.state.elements.totalCount}
                     marginTop="auto"
                     onChangePage={this.pageChanged}
                     onChangeRowsPerPage={this.rowsPerPageChanged}

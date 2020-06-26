@@ -32,6 +32,7 @@ class OrganizationEditor extends React.Component {
         this.selectedParentChanged = this.selectedParentChanged.bind(this);
         this.onOrgDialogClose = this.onOrgDialogClose.bind(this);
         this.handleResponseOnParentInfo = this.handleResponseOnParentInfo.bind(this);
+        this.submit = this.submit.bind(this);
     }
 
     componentDidMount() {
@@ -109,7 +110,9 @@ class OrganizationEditor extends React.Component {
 
     tempParent = null;
 
-    selectedParentChanged = (selection) => this.tempParent = selection;
+    selectedParentChanged(selection) {
+        this.tempParent = selection;
+    }
 
     onOrgDialogClose() {
         this.setState({organization: {...this.state.organization, parent: this.tempParent !== '' ? this.tempParent : null}, madeChanges:true, openOrgDialog:false});
@@ -117,10 +120,12 @@ class OrganizationEditor extends React.Component {
 
     parentBtnClicked = () => this.setState({openOrgDialog: true})
 
-    submit = () => 
+    submit() {
+        this.setState({waitingResponse: true});
         (this.updating ? updateOrganization : createOrganization)(this.state.organization)
             .then(this.handleResponseOnSubmitRequest)
             .catch(error => this.setState({error: 'Нет соединения с сервером, попробуйте позднее', waitingResponse:false}));
+    }
     
     static header = [
         {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
@@ -135,7 +140,7 @@ class OrganizationEditor extends React.Component {
             <Box margin="auto">
                 {
                     this.state.criticalError ? <Alert severity="error">{this.state.criticalError}</Alert> :
-                    this.waitingResponse ? <CircularProgress /> :
+                    this.state.waitingResponse ? <CircularProgress /> :
                     <>
                         <FormControl>
                             { 
@@ -173,8 +178,9 @@ class OrganizationEditor extends React.Component {
                             <DialogTitle>Выберите головную организацию</DialogTitle>
                             <DialogContent>
                                 <OrganizationTable
+                                    deletion={false}
                                     disassemble={OrganizationEditor.disassembleOrganization}
-                                    exclude={this.state.organization.id}
+                                    exclude={!this.state.organization.id ? undefined : this.state.organization.id}
                                     header={OrganizationEditor.header}
                                     selected={this.state.organization.parent}
                                     selection={true}

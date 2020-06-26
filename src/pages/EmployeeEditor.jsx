@@ -43,6 +43,7 @@ class EmployeeEditor extends React.Component {
         this.selectedChiefChanged = this.selectedChiefChanged.bind(this);
         this.onOrgDialogClose = this.onOrgDialogClose.bind(this);
         this.onChiefDialogClose = this.onChiefDialogClose.bind(this);
+        this.submit = this.submit.bind(this);
     }
 
     componentDidMount() {
@@ -179,10 +180,12 @@ class EmployeeEditor extends React.Component {
     orgBtnClicked = () => this.setState({openOrgDialog: true});
     chiefBtnClicked = () => this.setState({openChiefDialog: true});
 
-    submit = () => 
+    submit() {
+        this.setState({waitingResponse: true});
         (this.updating ? updateEmployee : createEmployee)(this.state.employee)
             .then(this.handleResponseOnSubmitRequest)
             .catch(error => this.setState({error: "Нет соединения с сервером, попробуйте позднее", waitingResponse:false}));
+    } 
     
     static header = [
         {id:"id", label:"ID"}, {id:"name", label:"Название организации"},
@@ -207,7 +210,7 @@ class EmployeeEditor extends React.Component {
             <Box margin="auto">
                 {
                     this.state.criticalError ? <Alert severity="error">{this.state.criticalError}</Alert> :
-                    this.waitingResponse ? <CircularProgress /> :
+                    this.state.waitingResponse ? <CircularProgress /> :
                     <>
                         <FormControl>
                             { 
@@ -273,7 +276,7 @@ class EmployeeEditor extends React.Component {
                                 <EmployeeTable
                                     deletion={false}
                                     disassemble={EmployeeEditor.disassembleEmployee}
-                                    exclude={[this.state.employee.id]}
+                                    exclude={!this.state.employee.id ? undefined : this.state.employee.id}
                                     header={EmployeeEditor.empHeader}
                                     selected={this.state.employee.chief}
                                     selection={true}
