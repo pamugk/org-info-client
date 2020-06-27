@@ -6,7 +6,7 @@ import SearchableTable from './SearchableTable';
 import SearchBar from './SearchBar';
 
 const EmployeeTable = (props) => {
-    const [search, setSearch] = useState({orgId: props.orgId});
+    const [search, setSearch] = useState({exclude: props.exclude, orgId: props.orgId});
     const [searchName, setSearchName] = useState("");
     const [searchOrg, setSearchOrg] = useState("");
 
@@ -18,7 +18,12 @@ const EmployeeTable = (props) => {
 
     const searchKeyPressed = (event) => {
         if (event.key === "Enter")
-            setSearch({search: searchName, organization: searchOrg, orgId: props.orgId});
+            setSearch({
+                exclude: props.exclude,
+                search: searchName,
+                organization: searchOrg,
+                orgId: props.orgId
+            });
     }
 
     return <>
@@ -42,7 +47,6 @@ const EmployeeTable = (props) => {
             deletion={props.deletion}
             disassemble={props.disassemble}
             elementProvider={getEmployeeList}
-            exclude={props.exclude}
             itemRedirection={employeeRedirection}
             header={props.header}
             keyProvider={employeeKey}

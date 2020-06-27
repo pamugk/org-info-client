@@ -27,7 +27,6 @@ class SearchableTable extends React.Component {
         deletion: PropTypes.bool.isRequired,
         disassemble: PropTypes.func.isRequired,
         elementProvider: PropTypes.func.isRequired,
-        exclude: PropTypes.string,
         itemRedirection: PropTypes.func,
         header: PropTypes.array.isRequired,
         keyProvider: PropTypes.func.isRequired,
@@ -80,13 +79,7 @@ class SearchableTable extends React.Component {
         switch(response.status) {
             case 200: {
                 response.json().then(json => {
-                    const dif = typeof this.props.exclude == "undefined" ? 0 : 1;
-                    this.setState({
-                        elements: {
-                            dataChunk: json.data.dataChunk.filter(element => this.props.keyProvider(element) !== this.props.exclude),
-                            totalCount: json.data.totalCount - dif
-                        }
-                    });
+                    this.setState({elements: json.data});
                 });
                 break;
             }

@@ -6,7 +6,7 @@ import SearchableTable from './SearchableTable';
 import SearchBar from './SearchBar';
 
 const OrganizationTable = (props) => {
-    const [search, setSearch] = useState({});
+    const [search, setSearch] = useState({exclude: props.exclude});
     const [searchName, setSearchName] = useState("");
 
     const organizationKey = (organization) => organization.id;
@@ -15,7 +15,7 @@ const OrganizationTable = (props) => {
     const searchNameChanged = (event) => setSearchName(event.target.value);
     const searchKeyPressed = (event) => {
         if (event.key === "Enter")
-            setSearch({search: searchName});
+            setSearch({exclude: props.exclude, search: searchName});
     }
 
     return <>
@@ -30,7 +30,6 @@ const OrganizationTable = (props) => {
             deletion={props.deletion}
             disassemble={props.disassemble}
             elementProvider={getOrganizationList}
-            exclude={props.exclude}
             itemRedirection={organizationRedirection}
             header={props.header}
             keyProvider={organizationKey}
