@@ -162,29 +162,6 @@ class TreeView extends React.Component {
             [...this.state.nodes.get(id).prevChildren.filter(key => !newChildren.includes(key))
             .reduce((result, key) => [...result, ...this.traverseNodeIds(key)], [])]);
         this.expansionStates = new Map([...this.expansionStates].filter(pair => !redundantNodeIds.has(pair.key)));
-        console.log(new Map([
-            ...[...this.state.nodes].filter(pair => !redundantNodeIds.has(pair[0])),
-            [id, {
-                ...this.state.nodes.get(id),
-                page: typeof this.state.nodes.get(id).page == "undefined" ? 0 : this.state.nodes.get(id).page,
-                totalCount: data.totalCount,
-                children: newChildren
-            }],
-            ...data.nodes.map(
-                child => [
-                    this.props.keyProvider(child.value),
-                    this.state.nodes.has(this.props.keyProvider(child.value)) ? {
-                        ...this.state.nodes.get(id), 
-                        label: this.props.elementStringifier(child.value),
-                        children: child.hasChildren ? this.state.nodes.get(id).children : [],
-                        page: 0
-                    } : {
-                        label: this.props.elementStringifier(child.value),
-                        children: child.hasChildren ? undefined : [],
-                        page: 0
-                    }
-                ]
-            )]));
         this.setState(
             {
                 selectedNodes: [...this.state.selectedNodes].filter(node => !redundantNodeIds.has(node)),
