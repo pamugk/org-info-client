@@ -116,7 +116,7 @@ class TreeView extends React.Component {
                 {
                     typeof this.state.nodes.get(id).children != "undefined" ||
                     this.state.nodes.get(id).error ?
-                    <IconButton onClick={() => this.refreshNodeChildren(id, undefined)} size="small">
+                    <IconButton onClick={() => this.refreshNodeChildren(id, 0)} size="small">
                         <RefreshIcon />
                     </IconButton> : 
                     null
